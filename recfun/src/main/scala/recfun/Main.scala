@@ -14,10 +14,10 @@ object Main {
    * Exercise 1
    */
     def pascal(c: Int, r: Int): Int = {
-      if (c == 0 || c == r) {
-        return 1
-      }
-      return pascal(c - 1, r - 1) + pascal(c, r - 1)
+      if (c == 0 || c == r)
+        1
+      else
+        pascal(c - 1, r - 1) + pascal(c, r - 1)
     }
 
   /**
@@ -25,21 +25,20 @@ object Main {
    */
     def updateBalance(balance: Int, char: Char): Int = {
       if (char == '(')
-        return balance + 1
+        balance + 1
       else if (char == ')')
-        return balance - 1
+        balance - 1
       else
-        return balance
+        balance
     }
 
     def balanceInner(chars: List[Char], openedBrackets: Int): Int = {
       if (openedBrackets < 0 || chars.isEmpty) {
-        return openedBrackets
+        openedBrackets
+      } else {
+        var updatedCount = updateBalance(openedBrackets, chars.head)
+        balanceInner(chars.tail, updatedCount)
       }
-      
-      var updatedCount = updateBalance(openedBrackets, chars.head)
-
-      return balanceInner(chars.tail, updatedCount)
     }
 
     def balance(chars: List[Char]): Boolean = {

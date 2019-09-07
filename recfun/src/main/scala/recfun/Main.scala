@@ -36,7 +36,7 @@ object Main {
       if (openedBrackets < 0 || chars.isEmpty) {
         openedBrackets
       } else {
-        var updatedCount = updateBalance(openedBrackets, chars.head)
+        val updatedCount = updateBalance(openedBrackets, chars.head)
         balanceInner(chars.tail, updatedCount)
       }
     }
@@ -50,23 +50,28 @@ object Main {
   /**
    * Exercise 3
    */
-    def iterateCoins(money: Int, coins: List[Int]): Int = {
-      var sum = 0
-      var passedCoins = coins
+    def countChangeInner(money: Int, passedCoins: List[Int]) = {
+      if (money == 0)
+        1
+      else if (money < 0)
+        0
+      else
+        sumCoin(money - passedCoins.head, passedCoins)
+    }
 
-      for (coin <- coins) {
-        sum += countChange(money - coin, passedCoins)
-        passedCoins = passedCoins.tail
+    def iterateCoins(money: Int, passedCoins: List[Int]): Int = {
+      if (passedCoins.length == 0)
+        0
+      else {
+        val innerSum = countChangeInner(money, passedCoins)
+        if (money == 0)
+          innerSum
+        else
+          innerSum + sumCoin(money, passedCoins.tail)
       }
-      sum
     }
 
     def countChange(money: Int, coins: List[Int]): Int = {
-      if (money == 0)
-        1
-      else if (money < 0 || coins.length == 0)
-        0
-      else
-        iterateCoins(money, coins)
+      iterateCoins(money, coins.sorted)
     }
   }

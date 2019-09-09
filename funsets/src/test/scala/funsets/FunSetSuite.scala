@@ -110,5 +110,40 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  trait MultiValueTestSets extends TestSets {
+    val us12 = union(s1, s2)
+    val us23 = union(s2, s3)
+    val us123 = union(us12, s3)
+  }
+
+  test("intersection contains only elements present in every set") {
+    new MultiValueTestSets {
+      val is = intersect(us12, us23)
+
+      assert(contains(is, 2))
+      assert(!contains(is, 1))
+      assert(!contains(is, 3))
+    }
+  }
+
+  test("difference contains only elements present in first set and not present in second") {
+    new MultiValueTestSets {
+      val diff1 = diff(us12, us23)
+
+      assert(contains(diff1, 1))
+      assert(!contains(diff1, 2))
+      assert(!contains(diff1, 3))
+    }
+  }
+
+  test("filter returns values satisfying the filter") {
+    new MultiValueTestSets {
+      val filtered = filter(us123, x => x < 3)
+
+      assert(contains(filtered, 1))
+      assert(contains(filtered, 2))
+      assert(!contains(filtered, 3))
+    }
+  }
 
 }

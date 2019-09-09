@@ -56,7 +56,7 @@ object Main {
       else if (money < 0)
         0
       else
-        sumCoin(money - passedCoins.head, passedCoins)
+        iterateCoins(money - passedCoins.head, passedCoins)
     }
 
     def iterateCoins(money: Int, passedCoins: List[Int]): Int = {
@@ -67,7 +67,7 @@ object Main {
         if (money == 0)
           innerSum
         else
-          innerSum + sumCoin(money, passedCoins.tail)
+          innerSum + iterateCoins(money, passedCoins.tail)
       }
     }
 

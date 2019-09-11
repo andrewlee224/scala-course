@@ -146,4 +146,44 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("forall checks that all values in the set satisfy the condition") {
+    def boundedEvenInts(x: Int): Boolean = (x % 2 == 0) && (x < 1000)
+    def condition(x: Int): Boolean = x < 2000
+
+    assert(forall(boundedEvenInts, condition))
+  }
+
+  test("forall returns false if the condition doesn't hold for at least one value in the set") {
+    def boundedEvenInts(x: Int): Boolean = (x % 2 == 0) && (x < 1000)
+    def condition(x: Int): Boolean = x != 200
+
+    assert(!forall(boundedEvenInts, condition))
+  }
+
+  test("exists checks that at least one value in the set satisfies the condition") {
+    def boundedEvenInts(x: Int): Boolean = (x % 2 == 0) && (x < 1000)
+    def condition(x: Int): Boolean = x == 200
+
+    assert(exists(boundedEvenInts, condition))
+  }
+
+  test("exists returns false if none of the values in the set satisfy the condition") {
+    def boundedEvenInts(x: Int): Boolean = (x % 2 == 0) && (x < 1000)
+    def oddNumber(x: Int): Boolean = x % 2 == 1
+
+    assert(!exists(boundedEvenInts, oddNumber))
+  }
+
+  test("map translates the set") {
+    new MultiValueTestSets {
+      // equivalent to subtracting 1 from every set element, because the operation here 
+      // is applied before checking set membership
+      val mapped12 = map(us12, (x => x + 1))
+
+      assert(contains(mapped12, 0))
+      assert(contains(mapped12, 1))
+      assert(!contains(mapped12, 2))
+    }
+  }
+
 }

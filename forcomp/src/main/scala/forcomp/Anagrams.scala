@@ -104,7 +104,7 @@ object Anagrams {
         } yield occurrences :: combinationsInner(occurrencesLess(occurrences, occ))).flatten
     }
 
-    combinationsInner(occurrences) ::: List(List())
+    combinationsInner(occurrences).distinct ::: List(List())
 
   }
 
@@ -128,7 +128,7 @@ object Anagrams {
       else
         z - subChar
     }
-    y.toMap.foldLeft(x.toMap)(foldFunc).toList
+    y.toMap.foldLeft(x.toMap)(foldFunc).toList.sortBy({ case (c, count) => c })
   }
 
   /** Returns a list of all anagram sentences of the given sentence.
@@ -174,22 +174,20 @@ object Anagrams {
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
     val occurrences = sentenceOccurrences(sentence)
 
-    def getAnagramsForCombinations(subOccurrences: Occurrences, currentWords: Sentence): List[Sentence] = {
-      for {
-        occurrenceCombination <- combinations(occurrences)
-        word <- dictionaryByOccurrences(occurrenceCombination)
-      } yield anagramsInner(subtract(occurrences, occurrenceCombination), word :: currentWords)
-    }
-
-    def anagramsInner(occurrences: Occurrences, currentWords: Sentence): Sentence = {
+    def anagramsInner(occurrences: Occurrences, currentWords: Sentence): List[Sentence] = {
+      //println(occurrences + ": " + currentWords)
       if (occurrences.isEmpty)
-        currentWords
+        List(currentWords)
       else {
-        getAnagramsForCombinations(occurrences, currentWords).flatten
+        for {
+          occurrenceCombination <- combinations(occurrences)
+          word <- dictionaryByOccurrences(occurrenceCombination)
+          nextSentence <- anagramsInner(subtract(occurrences, occurrenceCombination), word :: currentWords)
+        } yield nextSentence
       }
 
     }
 
-    getAnagramsForCombinations(occurrences, List()) ::: List(List())
+    anagramsInner(occurrences, List())
   }
 }

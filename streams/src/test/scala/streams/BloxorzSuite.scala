@@ -64,6 +64,33 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  test("neighbors level 1") {
+    new Level1 {
+      val sb = startBlock
+      val neighbors = for ((b, m) <- sb.neighbors) yield b
+
+      val expected = Set(
+        Block(Pos(1, -1), Pos(1, 0)),
+        Block(Pos(-1, 1), Pos(0, 1)),
+        Block(Pos(1, 2), Pos(1, 3)),
+        Block(Pos(2, 1), Pos(3, 1))
+      )
+      assert(neighbors.toSet == expected)
+    }
+  }
+
+  test("legalNeighbors level 1") {
+    new Level1 {
+      val legalNeighbors = for ((b, m) <- startBlock.legalNeighbors) yield b
+
+      val expected = Set(
+        Block(Pos(1, 2), Pos(1, 3)),
+        Block(Pos(2, 1), Pos(3, 1))
+      )
+      assert(legalNeighbors.toSet == expected)
+    }
+  }
+
 
 	test("optimal solution for level 1") {
     new Level1 {

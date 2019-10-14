@@ -10,7 +10,11 @@ trait Solver extends GameDef {
   /**
    * Returns `true` if the block `b` is at the final position
    */
-  def done(b: Block): Boolean = ???
+  def done(b: Block): Boolean = {
+    b match {
+      case Block(p1, p2) => p1 == this.goal && p2 == this.goal
+    }
+  }
 
   /**
    * This function takes two arguments: the current block `b` and

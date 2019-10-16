@@ -33,38 +33,11 @@ trait Solver extends GameDef {
    * that are inside the terrain.
    */
   def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = {
-    // def neighborsInner(bs: List[Block], history: List[Move]): Stream[(Block, List[Move])] = {
-    //   if (history.isEmpty)
-    //     Stream.empty
-    //   else {
-    //     for {
-    //       b <- bs
-    //       (block, move) <- b.legalNeighbors
-    //     } yield (block, history) #:: neighborsInner()
-    //   }
-    // }
+    val immediateNeighbors = for {
+      (newBlock, newMove) <- b.legalNeighbors
+    } yield (newBlock, newMove :: history)
 
-    // val newStreams = (for {
-    //   (block, move) <- b.legalNeighbors
-    // } yield (block, move :: history) #:: neighborsWithHistory(block, move :: history)).toStream
-    // newStreams.flatMap(x => x)
-    def neighborsSetStream(bs: Set[(Block, List[Move])]): Stream[Set[(Block, List[Move])]] = {
-      val more = for {
-        (block, moves) <- bs
-        (neighbor, move) <- block.legalNeighbors
-      } yield (neighbor, move :: moves)
-      bs #:: neighborsSetStream(more.toSet)
-    }
-
-    def neighborsStream = {
-      val blocks = Set((b, history))
-      val nss = neighborsSetStream(blocks)
-      for {
-        blockSet <- nss
-        (block, moves) <- blockSet
-      } yield (block, moves)
-    }
-    neighborsStream
+    immediateNeighbors.toStream
   }
 
   /**
@@ -106,9 +79,19 @@ trait Solver extends GameDef {
    */
   def from(initial: Stream[(Block, List[Move])],
            explored: Set[Block]): Stream[(Block, List[Move])] = {
-    val newNeighbors = newNeighborsOnly(initial, explored)
-    val (newBlock, newMoves) = newNeighbors.head
-    (newBlock, newMoves) #:: from(newNeighbors.tail, explored + newBlock)
+    if (initial.isEmpty)
+      Stream.empty
+    else {
+      val more = for {
+        (block, moves) <- initial
+      } yield newNeighborsOnly(neighborsWithHistory(block, moves), explored)
+      val flatMore = more.flatMap(x => x)
+      val flatSet = flatMore.toSet
+
+      val newExplored = flatSet.map({ case (block, moves) => block })
+
+      flatMore.toStream #::: from(flatMore, explored ++ newExplored)
+    }
   }
 
   /**

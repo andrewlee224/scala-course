@@ -50,6 +50,8 @@ trait GameDef {
    */
   val goal: Pos
 
+  def isBlockAtGoal(b: Block) = b match { case Block(p1, p2) => p1 == goal && p2 == goal }
+
   /**
    * The terrain is represented as a function from positions to
    * booleans. The function returns `true` for every position that
